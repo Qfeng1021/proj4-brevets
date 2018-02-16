@@ -123,11 +123,15 @@
   // (If we want to also keep the ISO-formatted times, we'll need to
   // stash them in hidden fields.) 
   function calc_times(control) {
+    var distance = $("#brevet_dist_km").val()
+    var begin_date = $("#begin_date").val()
+    var begin_time = $("#begin_time").val()
+
     var km = control.find("input[name='km']").val();
     var open_time_field = control.find("input[name='open']");
     var close_time_field = control.find("input[name='close']");
     
-    $.getJSON(TIME_CALC_URL, { km: km }, 
+    $.getJSON(TIME_CALC_URL, {distance: distance, begin_date: begin_date, begin_time: begin_time, km: km }, 
       // response handler
       function(data) {
          var times = data.result;

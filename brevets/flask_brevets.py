@@ -7,10 +7,11 @@ Replacement for RUSA ACP brevet time calculator
 import flask
 from flask import request
 import arrow  # Replacement for datetime, based on moment.js
-import acp_times  # Brevet time calculations
+import acp_times # Brevet time calculations
 import config
-
+import time
 import logging
+import datetime
 
 ###
 # Globals
@@ -52,13 +53,18 @@ def _calc_times():
     Expects one URL-encoded argument, the number of miles.
     """
     app.logger.debug("Got a JSON request")
+    distance = request.args.get("distance", type = int)
+    begin_time = request.args.get("begin_time", type = str)
+    begin_date = request.args.get("begin_date", type = str)
+    brevet_start_time = begin_date + " " + begin_time
     km = request.args.get('km', 999, type=float)
+
     app.logger.debug("km={}".format(km))
     app.logger.debug("request.args: {}".format(request.args))
     # FIXME: These probably aren't the right open and close times
     # and brevets may be longer than 200km
-    open_time = acp_times.open_time(km, 200, arrow.now().isoformat)
-    close_time = acp_times.close_time(km, 200, arrow.now().isoformat)
+    open_time = acp_times.open_time(km, distance, brevet_start_time)
+    close_time = acp_times.close_time(km, distance, brevet_start_time)
     result = {"open": open_time, "close": close_time}
     return flask.jsonify(result=result)
 
